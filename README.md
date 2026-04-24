@@ -1,16 +1,31 @@
 # 🛠️ Smart SQL Auditor (Senior PSR Edition)
 
-這是一個專為生產支持 (Production Support) 與資料庫管理設計的 SQL 審計工具。它結合了資深開發者的實戰經驗規則與現代大語言模型 (LLM) 的分析能力。
+這是一個結合了 **資深 PSR 經驗規則** 與 **Qwen-2.5 大語言模型** 的智能 SQL 審計工具。它旨在解決生產環境中因 SQL 疏忽導致的系統崩潰（如無索引查詢、全表更新），將風險排查從「事後修復」提前至「事前預防」。
+
+---
 
 ### 🌟 核心亮點
 - **雙層審計機制**：
-    - **Expert Rules (Local)**：基於 8 年 PSR 經驗，即時偵測全表更新、索引失效、笛卡爾積等高危行為。
-    - **AI Diagnostics (Remote)**：整合 Hugging Face Qwen-2.5 模型，提供專家級的 SQL 優化建議與重寫。
-- **DevSecOps 導向**：採用 API Token 動態輸入機制，確保生產密鑰不洩漏。
-- **React 技術棧**：使用 React 現代組件化架構開發。
+    - **Expert Rules (Local)**：基於 8 年 PSR 經驗，透過正則與邏輯引擎即時偵測全表更新、索引失效、笛卡爾積等高危行為。
+    - **AI Diagnostics (Remote)**：整合 Hugging Face Qwen-2.5 模型，提供專業 DBA 等級的 SQL 優化建議與重寫。
+- **DevSecOps 導向**：採用 API Token 動態輸入機制，確保生產密鑰不洩漏，符合企業安全規範。
+- **高可用設計**：實作模型熱切換與官方 SDK 整合，克服雲端環境網路攔截問題。
+
+---
+
+### 🔄 審計工作流 (Workflow)
+
+```mermaid
+graph TD
+    A[輸入 SQL 語句] --> B{第一層: 本地專家規則}
+    B -- 偵測到風險 --> C[即時警告彈窗]
+    B -- 基礎檢查通過 --> D[第二層: AI 深度診斷]
+    D --> E[Qwen-2.5 性能分析報告]
+    E --> F[SQL 重寫建議]
+```
 
 ### 🚀 快速開始
-1. 訪問 [你的 GitHub Pages 網址]
+1. 訪問 https://oPeterOc2.github.io/sql-auditor/
 2. 貼入測試 SQL（或使用內建測試案例）
 3. 輸入 Hugging Face Token 即可獲得深度 AI 建議
 
@@ -40,17 +55,9 @@
 
 ## 👨‍💻 作者與背景 (Author & Background)
 
-**Developed by [Chan Ka Ho] | 2026 Senior Developer AI Transformation Project**
+**Developed by Chan-Ka-Ho | 2026 Senior Developer AI Transformation Project**
 
-* **核心背景**：擁有約 8 年後端開發與 PSR (Production Support Request) 生產支持經驗，專長於 Java、Oracle SQL 與 Unix 自動化。
-* **技術轉型**：目前專注於 React 前端開發與 AI 工作流自動化 (AI Automation)，致力於將傳統企業級運維經驗與大語言模型 (LLM) 結合。
-* **專案動機**：本專案旨在探索 AI 如何賦能資深開發者的運維直覺，將多年積累的 SQL 調優與風險排查經驗轉化為可擴展的自動化工具。
-
-## 🚀 項目簡介 (Project Overview)
-
-這是一個結合了 **資深 PSR 經驗規則** 與 **Qwen-2.5 大語言模型** 的智能 SQL 審計工具。它能即時識別 SQL 中的致命生產風險（如全表更新、笛卡爾積），並提供專家級的優化建議。
-
-### 核心功能：
-- **即時風險攔截**：基於預設的正則表達式與邏輯引擎，秒級識別高危 SQL。
-- **AI 深度診斷**：利用 Hugging Face SDK 接入高性能模型進行效能評估。
-- **開發者友善 UI**：內建測試案例，支援動態 Token 配置。
+* **資深維運經驗**：擁有約 8 年後端開發與 **PSR (Production Support Request)** 生產支持經驗，深度參與過 SCV (Single Customer View) 等大型企業級系統的維護與開發。
+* **技術轉型實踐**：目前專注於 **React** 前端開發與 **AI 工作流自動化**，致力於將傳統資料庫運維中的「專家直覺」轉化為「自動化守衛」。
+* **設計初衷**：本專案旨在解決生產環境中因 SQL 疏忽導致的系統崩潰（如無索引查詢、全表更新）。透過整合資深開發者的審計邏輯與 **Qwen-2.5 LLM** 的深度解析，將風險排查從「事後修復」提前至「事前預防」。
+* **相關專案**：[Unix O&M Diagnostic Agent](https://github.com/oPeterOc2/unix-ai-agent) — 專注於 Unix 系統層級錯誤自動化診斷的 AIOps 工具。
