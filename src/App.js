@@ -7,8 +7,15 @@ const App = () => {
   const [results, setResults] = useState(null);
   const [aiAnalysis, setAiAnalysis] = useState('');
   const [loading, setLoading] = useState(false);
-  // 優先從 GitHub Codespace Secrets (REACT_APP_HF_TOKEN) 讀取
   const [hfToken, setHfToken] = useState('');
+  // 使用這一段可以在開發環境中自動填token(要先在secret 設定好token value)
+  // const [hfToken, setHfToken] = useState(() => {
+  // // 只有在非生產環境（即不是 deploy 後的網頁）才嘗試讀取環境變數
+  //   if (process.env.NODE_ENV !== 'production') {
+  //     return process.env.REACT_APP_HF_TOKEN || '';
+  //   }
+  //   return '';
+  // });
 
   // --- 測試案例庫 ---
   const testCases = [
