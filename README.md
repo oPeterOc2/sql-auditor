@@ -61,4 +61,4 @@ graph TD
 * **資深維運經驗**：擁有約 8 年後端開發與 **PSR (Production Support Request)** 生產支持經驗，深度參與過 SCV (Single Customer View) 等大型企業級系統的維護與開發。
 * **技術轉型實踐**：目前專注於 **React** 前端開發與 **AI 工作流自動化**，致力於將傳統資料庫運維中的「專家直覺」轉化為「自動化守衛」。
 * **設計初衷**：本專案旨在解決生產環境中因 SQL 疏忽導致的系統崩潰（如無索引查詢、全表更新）。透過整合資深開發者的審計邏輯與 **Qwen-2.5 LLM** 的深度解析，將風險排查從「事後修復」提前至「事前預防」。
-* **相關專案**：[Unix O&M Diagnostic Agent](https://github.com/oPeterOc2/unix-ai-agent) — 專注於 Unix 系統層級錯誤自動化診斷的 AIOps 工具。
+* **相關專案**：[Unix O&M Diagnostic Agent](https://github.com/oPeterOc2/ai-unix-automation) — 專注於 Unix 系統層級錯誤自動化診斷的 AIOps 工具。
