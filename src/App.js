@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { HfInference } from '@huggingface/inference';
+import { HfInference } from '@huggingface/inference'; 
+// Note: Leveraging HfInference for stable production-like response. 
+// Ready for migration to the new InferenceClient structure if async streaming requirements increase.
 
 const App = () => {
   // --- 狀態管理 ---

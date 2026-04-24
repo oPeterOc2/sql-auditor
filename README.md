@@ -31,7 +31,7 @@ graph TD
 
 ### 🛠️ 技術棧
 - Frontend: React.js
-- AI SDK: @huggingface/inference
+- **AI SDK**: `@huggingface/inference` (採用穩定版 `HfInference` 接口進行多模型調度)
 - Model: Qwen/Qwen2.5-7B-Instruct
 - Deployment: GitHub Pages
 
@@ -42,6 +42,7 @@ graph TD
 * **SDK-Driven Stability**：初步嘗試使用 REST API 進行模型調用時，發現前端環境處理跨域 (CORS) 與流式傳輸較為繁瑣且不穩定。隨即決定**重構通訊層**，遷移至官方 `@huggingface/inference` SDK，利用其內部封裝的 `chatCompletion` 機制，顯著提升了生產環境下的通訊成功率。
 * **Security & Push Protection**：在執行自動化部署 (GitHub Pages) 時，觸發了 GitHub 的 **Push Protection** 機制。這引發了對前端環境變量注入風險的深度思考：識別出 `REACT_APP_` 變量在 Build Time 會被硬編碼至混淆後的代碼中。隨即調整架構，改為「動態輸入密鑰」模式，從源頭解決了 API 配額洩漏的風險。
 * **Pattern Recognition Optimization**：針對 Oracle 舊式語法（如逗號分隔多表關聯）與新式 `JOIN` 語法進行邏輯整合，確保審計引擎能覆蓋不同年代的遺留代碼 (Legacy Code)，精準攔截潛在的笛卡爾積 (Cartesian Product) 異常。
+* **SDK Stability vs. Evolution**: 在實作 AI 通訊層時，選擇了 `@huggingface/inference` 的 `HfInference` 接口。雖然官方新版推行 `InferenceClient` 架構，但考量到當前 Prototype 的穩定性與對舊版實作邏輯的相容性，決定保留 HfInference 並透過自定義封裝實現模型熱切換。這展現了在開發中**「平衡新舊技術轉換成本」**的工程考量。
 
 ## 🛠️ 開發方法論 (Development Methodology)
 
