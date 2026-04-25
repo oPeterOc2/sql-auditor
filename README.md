@@ -11,6 +11,9 @@
 - **DevSecOps 導向**：採用 API Token 動態輸入機制，確保生產密鑰不洩漏，符合企業安全規範。
 - **高可用設計**：實作模型熱切換與官方 SDK 整合，克服雲端環境網路攔截問題。
 
+### 📺 實機演示 (Demo)
+![Smart SQL Auditor Demo](assets/sql-auditor-demo.mp4)
+
 ---
 
 ### 🔄 審計工作流 (Workflow)
