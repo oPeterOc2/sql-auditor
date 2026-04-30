@@ -4,106 +4,107 @@ import { HfInference } from '@huggingface/inference';
 // Ready for migration to the new InferenceClient structure if async streaming requirements increase.
 
 const App = () => {
-  // --- 狀態管理 ---
+  // --- State Management ---
   const [sql, setSql] = useState('');
   const [results, setResults] = useState(null);
   const [aiAnalysis, setAiAnalysis] = useState('');
   const [loading, setLoading] = useState(false);
   const [hfToken, setHfToken] = useState('');
-  // 使用這一段可以在開發環境中自動填token(要先在secret 設定好token value)
+
+  // Use this block to auto-fill the token in dev environment (ensure token value is configured in secrets first)
   // const [hfToken, setHfToken] = useState(() => {
-  // // 只有在非生產環境（即不是 deploy 後的網頁）才嘗試讀取環境變數
+  //   // Only attempt to read environment variables in non-production environments (i.e., not a deployed web page)
   //   if (process.env.NODE_ENV !== 'production') {
   //     return process.env.REACT_APP_HF_TOKEN || '';
   //   }
   //   return '';
   // });
 
-  // --- 測試案例庫 ---
+  // --- Test Case Library ---
   const testCases = [
     { 
-      label: "1. 致命全表更新", 
+      label: "1. Fatal Full Table Update", 
       code: "UPDATE CC_USER_BALANCE \nSET BALANCE_AMOUNT = 0, \nLAST_UPDATE_DATE = SYSDATE" 
     },
     { 
-      label: "2. 索引失效 (LIKE %)", 
+      label: "2. Index Invalidation (LIKE %)", 
       code: "SELECT * FROM CRM_CUSTOMER_INFO \nWHERE CUST_MOBILE_NO LIKE '%91234567'" 
     },
     { 
-      label: "3. 舊式笛卡爾積", 
+      label: "3. Legacy Cartesian Product", 
       code: "SELECT t1.CUST_ID, t2.ORDER_NO \nFROM TS_CUST_MASTER t1, TS_ORDER_DETAIL t2" 
     }
   ];
 
-  // --- 第一層：資深 PSR 專家硬規則 (本地即時執行) ---
+  // --- Layer 1: Senior PSR Expert Hard Rules (Local Execution) ---
   const quickAudit = (inputSql) => {
     const issues = [];
     const upper = inputSql.toUpperCase().trim();
 
-    // 1. 全表更新/刪除檢查
+    // 1. Full Table Update/Delete Check
     if ((upper.includes('UPDATE') || upper.includes('DELETE')) && !upper.includes('WHERE')) {
-      issues.push({ level: 'Critical', msg: '偵測到全表更新/刪除！缺失 WHERE 子句，這在生產環境是致命錯誤。' });
+      issues.push({ level: 'Critical', msg: 'Full table UPDATE/DELETE detected! Missing WHERE clause is a fatal error in production environment.' });
     }
     
-    // 2. Select * 檢查
+    // 2. Select * Check
     if (upper.includes('SELECT *')) {
-      issues.push({ level: 'Warning', msg: '建議指定具體欄位。使用 SELECT * 會增加 I/O 負擔並降低緩存效率。' });
+      issues.push({ level: 'Warning', msg: 'Explicit column selection recommended. SELECT * increases I/O overhead and reduces cache efficiency.' });
     }
 
-    // 3. 笛卡爾積 (Cartesian Product) 檢查
+    // 3. Cartesian Product Check
     const hasMultipleTables = upper.includes(',') && (!upper.includes('WHERE') || upper.indexOf(',') < upper.indexOf('WHERE'));
     const hasJoinWithoutOn = upper.includes('JOIN') && !upper.includes('ON');
     if (hasMultipleTables || hasJoinWithoutOn) {
-      issues.push({ level: 'High', msg: '偵測到潛在的笛卡爾積！多表關聯缺失條件，可能導致資料庫崩潰。' });
+      issues.push({ level: 'High', msg: 'Potential Cartesian Product detected! Missing join conditions may lead to database service interruption.' });
     }
 
-    // 4. 模糊查詢前綴檢查
+    // 4. Fuzzy Query Prefix Check
     if (upper.includes("LIKE '%")) {
-      issues.push({ level: 'Warning', msg: '前綴百分號 (%) 導致 Oracle 索引失效。建議評估資料量或改用全文索引。' });
+      issues.push({ level: 'Warning', msg: 'Leading wildcard (%) invalidates Oracle indexes. Evaluate data volume or consider full-text search alternatives.' });
     }
 
     return issues;
   };
 
-  // --- 第二層：AI 深度審計 (呼叫 Qwen 2.5) ---
+  // --- Layer 2: AI Deep Audit (Calling Qwen 2.5) ---
   const handleAudit = async () => {
     if (!hfToken) {
-      alert("請輸入或配置 Hugging Face Token 以啟用 AI 功能。");
+      alert("Please enter or configure Hugging Face Token to enable AI diagnostic features.");
       return;
     }
 
     setLoading(true);
     setAiAnalysis('');
     
-    // 執行本地規則
+    // Execute local rule engine
     const localIssues = quickAudit(sql);
     setResults(localIssues);
 
     try {
       const client = new HfInference(hfToken);
-      const prompt = `你是一位資深 Oracle DBA 和 Production Support 工程師。
-      請審計以下 SQL 並給出專業建議：
+      const prompt = `You are a senior Oracle DBA and Production Support Engineer. 
+      Please audit the following SQL and provide professional technical recommendations:
       
       SQL: ${sql}
       
-      請嚴格按以下格式回答：
-      ### 1. 潛在風險評估
-      ### 2. 效能優化建議 (針對 Oracle 特性)
-      ### 3. 優化後的 SQL 範例`;
+      Please respond strictly in the following format:
+      ### 1. Potential Risk Assessment
+      ### 2. Performance Optimization (Oracle Specific)
+      ### 3. Optimized SQL Example`;
 
       const response = await client.chatCompletion({
         model: "Qwen/Qwen2.5-7B-Instruct",
         messages: [
-          { role: "system", content: "你是一位精通 SQL 性能調優和資料庫安全的資深專家。" },
+          { role: "system", content: "You are a senior expert specialized in SQL performance tuning and database security." },
           { role: "user", content: prompt }
         ],
         max_tokens: 800,
-        temperature: 0.3, // 降低隨機性，確保建議專業穩定
+        temperature: 0.3, // Lower temperature for deterministic professional output
       });
 
       setAiAnalysis(response.choices[0].message.content);
     } catch (err) {
-      setAiAnalysis(`AI 診斷暫時不可用: ${err.message}`);
+      setAiAnalysis(`AI Diagnosis temporarily unavailable: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -116,22 +117,22 @@ const App = () => {
         <p style={{ color: '#666' }}>Senior Production Support (PSR) Analysis Tool</p>
       </header>
 
-      {/* 配置區 */}
+      {/* Configuration Section */}
       <section style={{ backgroundColor: '#f0f2f5', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
         <label style={{ fontWeight: 'bold' }}>Hugging Face Token: </label>
         <input 
           type="password" 
           value={hfToken} 
           onChange={(e) => setHfToken(e.target.value)}
-          placeholder="請輸入 hf_..."
+          placeholder="Enter hf_..."
           style={{ width: '300px', marginLeft: '10px', padding: '5px' }}
         />
-        {process.env.REACT_APP_HF_TOKEN && <span style={{ color: 'green', marginLeft: '10px' }}>● 系統密鑰已載入</span>}
+        {process.env.REACT_APP_HF_TOKEN && <span style={{ color: 'green', marginLeft: '10px' }}>● System Secret Loaded Successfully</span>}
       </section>
 
-      {/* 測試範例區 */}
+      {/* Test Case Selection Section */}
       <div style={{ marginBottom: '10px' }}>
-        <strong>載入範例：</strong>
+        <strong>Load Examples: </strong>
         {testCases.map((tc, idx) => (
           <button 
             key={idx} 
@@ -143,12 +144,12 @@ const App = () => {
         ))}
       </div>
 
-      {/* 輸入區 */}
+      {/* SQL Input Area */}
       <textarea 
         style={{ width: '100%', height: '180px', padding: '15px', fontSize: '14px', borderRadius: '8px', border: '1px solid #333', boxSizing: 'border-box', backgroundColor: '#2d2d2d', color: '#fff', fontFamily: 'monospace' }}
         value={sql}
         onChange={(e) => setSql(e.target.value)}
-        placeholder="在此貼上 SQL 語句..."
+        placeholder="Paste your SQL statements here..."
       />
 
       <button 
@@ -156,18 +157,18 @@ const App = () => {
         disabled={loading || !sql}
         style={{ width: '100%', marginTop: '15px', padding: '15px', backgroundColor: loading ? '#999' : '#000', color: '#fff', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', borderRadius: '8px', border: 'none' }}
       >
-        {loading ? '🔍 正在進行深度審計...' : '開始分析 SQL'}
+        {loading ? '🔍 Performing Deep Audit...' : 'Start SQL Analysis'}
       </button>
 
-      {/* 審計報告區 */}
+      {/* Audit Report Result Area */}
       {results && (
         <div style={{ marginTop: '30px' }}>
-          <h2 style={{ borderLeft: '5px solid #000', paddingLeft: '10px' }}>分析報告</h2>
+          <h2 style={{ borderLeft: '5px solid #000', paddingLeft: '10px' }}>Analysis Report</h2>
           
-          {/* 本地 PSR 規則結果 */}
+          {/* Local PSR Rule Engine Results */}
           <div style={{ marginBottom: '20px' }}>
             {results.length === 0 ? (
-              <div style={{ padding: '10px', backgroundColor: '#e8f5e9', color: '#2e7d32', borderRadius: '4px' }}>✅ 通過基礎 PSR 規則檢查。</div>
+              <div style={{ padding: '10px', backgroundColor: '#e8f5e9', color: '#2e7d32', borderRadius: '4px' }}>✅ Passed all basic PSR rule checks.</div>
             ) : (
               results.map((r, i) => (
                 <div key={i} style={{ padding: '10px', marginBottom: '8px', backgroundColor: r.level === 'Critical' ? '#ffebee' : '#fff3e0', borderLeft: `5px solid ${r.level === 'Critical' ? '#d32f2f' : '#f57c00'}`, color: '#333' }}>
@@ -177,10 +178,10 @@ const App = () => {
             )}
           </div>
 
-          {/* AI 建議結果 */}
+          {/* AI-Powered Diagnostic Results */}
           {aiAnalysis && (
             <div style={{ padding: '20px', backgroundColor: '#fff', border: '1px solid #ddd', borderRadius: '8px', whiteSpace: 'pre-wrap', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-              <h3 style={{ marginTop: 0 }}>🤖 AI 深度診斷 (Qwen 2.5)</h3>
+              <h3 style={{ marginTop: 0 }}>🤖 AI Deep Diagnosis (Qwen 2.5)</h3>
               {aiAnalysis}
             </div>
           )}
