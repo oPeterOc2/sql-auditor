@@ -3,6 +3,8 @@
 This is an intelligent SQL auditing tool that combines **senior PSR expert rules** with the **Qwen-2.5 large language model**.  
 It aims to prevent production incidents caused by SQL negligence (such as missing indexes or full‑table updates), shifting risk handling from “post‑incident repair” to “pre‑incident prevention”.
 
+This project is built upon my 8 years of enterprise‑level PSR and backend experience, converting real production failure patterns into automated SQL risk detection rules.
+
 ---
 
 ### 🌟 Core Highlights
@@ -35,6 +37,8 @@ graph TD
 2. Paste your SQL (or use built‑in test cases)
 3. Enter your Hugging Face Token to receive AI‑powered insights
 
+No secrets are stored or transmitted by the application; all tokens remain fully client‑side to comply with DevSecOps practices.
+
 ### 🛠️ Tech Stack
 - Frontend: React.js
 - AI SDK: @huggingface/inference (stable HfInference interface)
@@ -61,6 +65,8 @@ During the development of this “Smart SQL Auditing Tool”, several production
   Although the newer `InferenceClient` is promoted, the project retained `HfInference` for prototype stability and backward compatibility, adding custom wrappers for model hot‑switching.  
   This reflects the engineering trade‑off between adopting new tech and maintaining stable delivery.
 
+These auditing rules are derived from real production cases encountered during SCV backend development, data integrity governance, and multi‑system PSR workflows.
+
 ## 🛠️ Development Methodology
 
 This project follows an **AI‑Augmented Engineering** approach:
@@ -74,6 +80,8 @@ This project follows an **AI‑Augmented Engineering** approach:
 * **Continuous Optimization**:  
   When `HfInference` was marked deprecated, AI assistance was used to quickly map the new `InferenceClient` spec and complete a smooth migration within minutes.
 
+The rule engine design follows my workflow of converting ambiguous requirements into precise FRS logic, ensuring deterministic and reproducible SQL risk evaluation.
+
 ## 👨‍💻 Author & Background
 
 **Developed by Chan‑Ka‑Ho | 2026 Senior Developer AI Transformation Project**
@@ -86,6 +94,8 @@ This project follows an **AI‑Augmented Engineering** approach:
 
 * **Project Purpose**:  
   Prevent production outages caused by SQL negligence (missing indexes, full‑table updates) by combining expert rules with Qwen‑2.5 deep analysis.
+
+This project complements my Unix O&M Diagnostic Agent, forming a broader AIOps toolkit across SQL, Unix, and system‑level diagnostics.
 
 * **Related Project**:  
   [Unix O&M Diagnostic Agent](https://github.com/oPeterOc2/ai-unix-automation) — an AIOps tool for Unix‑level automated diagnostics.
