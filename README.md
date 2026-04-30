@@ -88,4 +88,4 @@ This project follows an **AI‑Augmented Engineering** approach:
   Prevent production outages caused by SQL negligence (missing indexes, full‑table updates) by combining expert rules with Qwen‑2.5 deep analysis.
 
 * **Related Project**:  
-  Unix O&M Diagnostic Agent — automated AIOps tool for Unix‑level error diagnostics.
+  [Unix O&M Diagnostic Agent](https://github.com/oPeterOc2/ai-unix-automation) — an AIOps tool for Unix‑level automated diagnostics.
