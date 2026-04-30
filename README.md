@@ -15,7 +15,7 @@ It aims to prevent production incidents caused by SQL negligence (such as missin
 - **High Availability Design**: Implements model hot‑switching and official SDK integration to overcome cloud network interception issues.
 
 ### 📺 Demo
-![Smart SQL Auditor Demo](assets/sql-auditor-demo.mp4)
+![Smart SQL Auditor Demo](https://github.com/user-attachments/assets/06fe24d0-59ba-4eff-8e6e-9b80b691156c)
 
 ---
 
